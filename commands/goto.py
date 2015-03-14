@@ -43,7 +43,7 @@ class CppycmGotoCommand(sublime_plugin.TextCommand):
         t.start()
 
     def is_enabled(self):
-        ''' 
+        '''
         Determine if this command is enabled or not
         '''
 

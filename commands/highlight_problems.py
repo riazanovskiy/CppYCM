@@ -50,7 +50,7 @@ class CppycmHighlightProblemsCommand(sublime_plugin.WindowCommand):
         t.start()
 
     def is_enabled(self):
-        ''' 
+        '''
         Determine if this command is enabled or not
         '''
         return is_cpp(active_view())
@@ -66,7 +66,6 @@ class CppycmHighlightProblemsCommand(sublime_plugin.WindowCommand):
 
     def highlight_problems(self, view, problems):
         view.erase_regions('clang-code-errors')
-        view_id = view.id()
         view_cache = {}
         regions = []
         # erase output panel
@@ -91,9 +90,8 @@ class CppycmHighlightProblemsCommand(sublime_plugin.WindowCommand):
         self.output_panel.set_read_only(True)
         self.output_panel.run_command(
             'move_to', {'to': 'bof', 'extend': False})
-        if problems:
-            self.window.run_command(
-                'show_panel', {'panel': self.output_panel_name})
+        self.window.run_command('show_panel' if problems else 'hide_panel',
+                                {'panel': self.output_panel_name})
         # self.view_cache[view_id] = view_cache
         style = (sublime.DRAW_NO_FILL | sublime.DRAW_NO_OUTLINE |
                  sublime.DRAW_SQUIGGLY_UNDERLINE)
