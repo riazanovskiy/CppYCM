@@ -20,7 +20,20 @@ def complete_func(server, filepath, contents, row, col, callback):
     if rst == '':
         return
 
-    completions = json.loads(rst)['completions']
+    rst_dict = json.loads(rst)
+    completions = rst_dict['completions']
+
+    if not completions:
+        idx = sum(len(line) + 1 for line in contents.split('\n')[:row - 1]) + rst_dict['completion_start_column'] - 1
+        contents = contents[:idx] + '.' + contents[idx:]
+        rst = server.SendCodeCompletionRequest(filepath=filepath,
+                                               contents=contents,
+                                               filetype='cpp',
+                                               line_num=row,
+                                               column_num=col)
+        if rst == '':
+            return
+        completions = json.loads(rst)['completions']
 
     data = []
     for comp in completions:
@@ -49,12 +62,14 @@ class CppYCMCompletionsListener(sublime_plugin.EventListener):
         '''
         Sublime Text autocompletion event handler.
         '''
+
         if not is_cpp(view) or view.is_scratch():
             return
 
         # if completion should begin
         leftchar = view.substr(locations[0] - 2)
         thischar = view.substr(locations[0] - 1)
+
         if thischar == '>' and leftchar != '-':
             return
         if thischar == ':' and leftchar != ':':
